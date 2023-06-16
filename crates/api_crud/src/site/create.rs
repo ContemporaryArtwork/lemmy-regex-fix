@@ -28,7 +28,7 @@ use lemmy_db_views::structs::SiteView;
 use lemmy_utils::{
   error::LemmyError,
   utils::{
-    slurs::{check_slurs, check_slurs_opt},
+    slurs::{check_slurs, check_slurs_opt, build_slur_regex},
     validation::is_valid_body_field,
   },
 };
