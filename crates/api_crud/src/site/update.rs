@@ -30,7 +30,10 @@ use lemmy_db_schema::{
 use lemmy_db_views::structs::SiteView;
 use lemmy_utils::{
   error::LemmyError,
-  utils::{slurs::check_slurs_opt, validation::is_valid_body_field, slurs::build_slur_regex},
+  utils::{
+    slurs::{build_slur_regex, check_slurs_opt},
+    validation::is_valid_body_field,
+  },
 };
 
 #[async_trait::async_trait(?Send)]
@@ -51,11 +54,11 @@ impl PerformCrud for EditSite {
     let slur_regex = local_site_to_slur_regex(&local_site);
 
     let data_slur_regex_valid_result = std::panic::catch_unwind(|| {
-        build_slur_regex(data.slur_filter_regex.as_deref());
+      build_slur_regex(data.slur_filter_regex.as_deref());
     });
 
-    if data_slur_regex_valid_result.is_err(){
-        return Err(LemmyError::from_message("bad_slur_regex"));
+    if data_slur_regex_valid_result.is_err() {
+      return Err(LemmyError::from_message("bad_slur_regex"));
     }
 
     check_slurs_opt(&data.name, &slur_regex)?;
