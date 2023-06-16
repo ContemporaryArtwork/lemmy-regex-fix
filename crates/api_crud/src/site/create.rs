@@ -56,6 +56,15 @@ impl PerformCrud for CreateSite {
     let banner = diesel_option_overwrite_to_url(&data.banner)?;
 
     let slur_regex = local_site_to_slur_regex(&local_site);
+
+    let data_slur_regex_valid_result = std::panic::catch_unwind(|| {                                                                                                                                                                          
+        build_slur_regex(data.slur_filter_regex.as_deref());                                                                                                                                                                                  
+    });                                                                                                                                                                                                                                       
+                                                                                                                                                                                                                                              
+    if data_slur_regex_valid_result.is_err(){                                                                                                                                                                                                 
+        return Err(LemmyError::from_message("bad_slur_regex"));                                                                                                                                                                               
+    }
+
     check_slurs(&data.name, &slur_regex)?;
     check_slurs_opt(&data.description, &slur_regex)?;
 
