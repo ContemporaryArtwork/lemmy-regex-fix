@@ -451,7 +451,7 @@ pub fn local_site_rate_limit_to_rate_limit_config(
 }
 
 pub fn local_site_to_slur_regex(local_site: &LocalSite) -> Option<Regex> {
-  build_slur_regex(local_site.slur_filter_regex.as_deref())
+  build_slur_regex(local_site.slur_filter_regex.as_deref()).ok()
 }
 
 pub fn local_site_opt_to_slur_regex(local_site: &Option<LocalSite>) -> Option<Regex> {
