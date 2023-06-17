@@ -51,6 +51,8 @@ pub struct LocalUser {
   pub totp_2fa_secret: Option<String>,
   /// A URL to add their 2-factor auth.
   pub totp_2fa_url: Option<String>,
+  /// Whether to show notifications for new comments.
+  pub show_new_comment_notifs: bool,
 }
 
 #[derive(Clone, TypedBuilder)]
@@ -78,6 +80,7 @@ pub struct LocalUserInsertForm {
   pub accepted_application: Option<bool>,
   pub totp_2fa_secret: Option<Option<String>>,
   pub totp_2fa_url: Option<Option<String>>,
+  pub show_new_comment_notifs: Option<bool>,
 }
 
 #[derive(Clone, TypedBuilder)]
@@ -102,4 +105,5 @@ pub struct LocalUserUpdateForm {
   pub accepted_application: Option<bool>,
   pub totp_2fa_secret: Option<Option<String>>,
   pub totp_2fa_url: Option<Option<String>>,
+  pub show_new_comment_notifs: Option<bool>,
 }

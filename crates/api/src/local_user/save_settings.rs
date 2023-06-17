@@ -117,6 +117,7 @@ impl Perform for SaveUserSettings {
       .show_avatars(data.show_avatars)
       .show_read_posts(data.show_read_posts)
       .show_new_post_notifs(data.show_new_post_notifs)
+      .show_new_comment_notifs(data.show_new_comment_notifs.or(Some(true)))
       .send_notifications_to_email(data.send_notifications_to_email)
       .show_nsfw(data.show_nsfw)
       .show_bot_accounts(data.show_bot_accounts)

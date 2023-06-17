@@ -106,6 +106,14 @@ pub async fn send_local_notifs(
       // TODO
       // At some point, make it so you can't tag the parent creator either
       // This can cause two notifications, one for reply and the other for mention
+      let notify:bool = mention_user_view.local_user.show_new_comment_notifs;
+
+      //Don't notify this user if they have chosen not to receive comment notifications
+      /*
+      if notify {
+        recipient_ids.push(mention_user_view.local_user.id);
+      }*/
+
       recipient_ids.push(mention_user_view.local_user.id);
 
       let user_mention_form = PersonMentionInsertForm {

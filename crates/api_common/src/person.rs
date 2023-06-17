@@ -124,6 +124,8 @@ pub struct SaveUserSettings {
   /// Whether to show notifications for new posts.
   // TODO notifs need to be reworked.
   pub show_new_post_notifs: Option<bool>,
+  // Whether to show notifications for new comments.
+  pub show_new_comment_notifs: Option<bool>,
   /// A list of languages you are able to see discussion in.
   pub discussion_languages: Option<Vec<LanguageId>>,
   /// Generates a TOTP / 2-factor authentication token.
