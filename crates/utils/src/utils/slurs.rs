@@ -30,13 +30,18 @@ pub(crate) fn slur_check<'a>(
   }
 }
 
-pub fn build_slur_regex(regex_str: Option<&str>) -> Option<Regex> {
-  regex_str.map(|slurs| {
-    RegexBuilder::new(slurs)
-      .case_insensitive(true)
-      .build()
-      .expect("compile regex")
-  })
+fn build_lemmy_regex_compile_error(_e: regex::Error) -> LemmyError {
+  LemmyError::from_message("slur_regex_failed_to_compile")
+}
+
+pub fn build_slur_regex(regex_str: Option<&str>) -> Result<Regex, LemmyError> {
+  match regex_str {
+    Some(slurs) => {
+      let regex_result = RegexBuilder::new(slurs).case_insensitive(true).build();
+      regex_result.map_err(build_lemmy_regex_compile_error)
+    }
+    None => Err(LemmyError::from_message("input_slur_regex_was_not_present")),
+  }
 }
 
 pub fn check_slurs(text: &str, slur_regex: &Option<Regex>) -> Result<(), LemmyError> {
