@@ -106,12 +106,10 @@ pub async fn send_local_notifs(
       // TODO
       // At some point, make it so you can't tag the parent creator either
       // This can cause two notifications, one for reply and the other for mention
-      let notify:bool = mention_user_view.local_user.show_new_comment_notifs;
 
       //Don't notify this user if they have chosen not to receive comment notifications
-      /*
-      if notify {
-        recipient_ids.push(mention_user_view.local_user.id);
+      /*if !should_notify_for_mention {
+        continue;
       }*/
 
       recipient_ids.push(mention_user_view.local_user.id);
@@ -157,28 +155,31 @@ pub async fn send_local_notifs(
     if parent_comment.creator_id != person.id && !creator_blocked {
       let user_view = LocalUserView::read_person(context.pool(), parent_creator_id).await;
       if let Ok(parent_user_view) = user_view {
-        recipient_ids.push(parent_user_view.local_user.id);
+        //Don't show notification to poster of parent comment if they don't want one
+        if !parent_user_view.local_user.show_new_comment_notifs {
+            recipient_ids.push(parent_user_view.local_user.id);
 
-        let comment_reply_form = CommentReplyInsertForm {
-          recipient_id: parent_user_view.person.id,
-          comment_id: comment.id,
-          read: None,
-        };
+            let comment_reply_form = CommentReplyInsertForm {
+              recipient_id: parent_user_view.person.id,
+              comment_id: comment.id,
+              read: None,
+            };
 
-        // Allow this to fail softly, since comment edits might re-update or replace it
-        // Let the uniqueness handle this fail
-        CommentReply::create(context.pool(), &comment_reply_form)
-          .await
-          .ok();
+            // Allow this to fail softly, since comment edits might re-update or replace it
+            // Let the uniqueness handle this fail
+            CommentReply::create(context.pool(), &comment_reply_form)
+              .await
+              .ok();
 
-        if do_send_email {
-          let lang = get_interface_language(&parent_user_view);
-          send_email_to_user(
-            &parent_user_view,
-            &lang.notification_comment_reply_subject(&person.name),
-            &lang.notification_comment_reply_body(&comment.content, &inbox_link, &person.name),
-            context.settings(),
-          )
+            if do_send_email {
+              let lang = get_interface_language(&parent_user_view);
+              send_email_to_user(
+                &parent_user_view,
+                &lang.notification_comment_reply_subject(&person.name),
+                &lang.notification_comment_reply_body(&comment.content, &inbox_link, &person.name),
+                context.settings(),
+              )
+            }
         }
       }
     }
@@ -193,28 +194,30 @@ pub async fn send_local_notifs(
       let creator_id = post.creator_id;
       let parent_user = LocalUserView::read_person(context.pool(), creator_id).await;
       if let Ok(parent_user_view) = parent_user {
-        recipient_ids.push(parent_user_view.local_user.id);
+        if !parent_user_view.local_user.show_new_comment_notifs {
+            recipient_ids.push(parent_user_view.local_user.id);
 
-        let comment_reply_form = CommentReplyInsertForm {
-          recipient_id: parent_user_view.person.id,
-          comment_id: comment.id,
-          read: None,
-        };
+            let comment_reply_form = CommentReplyInsertForm {
+              recipient_id: parent_user_view.person.id,
+              comment_id: comment.id,
+              read: None,
+            };
 
-        // Allow this to fail softly, since comment edits might re-update or replace it
-        // Let the uniqueness handle this fail
-        CommentReply::create(context.pool(), &comment_reply_form)
-          .await
-          .ok();
+            // Allow this to fail softly, since comment edits might re-update or replace it
+            // Let the uniqueness handle this fail
+            CommentReply::create(context.pool(), &comment_reply_form)
+              .await
+              .ok();
 
-        if do_send_email {
-          let lang = get_interface_language(&parent_user_view);
-          send_email_to_user(
-            &parent_user_view,
-            &lang.notification_post_reply_subject(&person.name),
-            &lang.notification_post_reply_body(&comment.content, &inbox_link, &person.name),
-            context.settings(),
-          )
+            if do_send_email {
+              let lang = get_interface_language(&parent_user_view);
+              send_email_to_user(
+                &parent_user_view,
+                &lang.notification_post_reply_subject(&person.name),
+                &lang.notification_post_reply_body(&comment.content, &inbox_link, &person.name),
+                context.settings(),
+              )
+            }
         }
       }
     }
